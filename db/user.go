@@ -3,46 +3,39 @@ package db
 import (
 	"fmt"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis"
 )
 
 type User struct {
-	Username string `json:"username" binding:"required"`
-	Points   int    `json:"points" binding:"required"`
-	Rank     int    `json:"rank"`
+	Id         string `json:"id" binding:"required"`
+	Name       string `json:"name" binding:"required"`
+	Created_at string `json:"created_at"`
 }
 
 func (db *Database) SaveUser(user *User) error {
 	member := &redis.Z{
-		Score:  float64(user.Points),
-		Member: user.Username,
+		Id:         user.Id,
+		Name:       user.Name,
+		Created_at: user.Created_at,
 	}
 	pipe := db.Client.TxPipeline()
-	pipe.ZAdd(Ctx, "leaderboard", member)
-	rank := pipe.ZRank(Ctx, leaderboardKey, user.Username)
+	pipe.ZAdd(Ctx, "user", member)
 	_, err := pipe.Exec(Ctx)
 	if err != nil {
 		return err
 	}
-	fmt.Println(rank.Val(), err)
-	user.Rank = int(rank.Val())
+	fmt.Println()
 	return nil
 }
 
-func (db *Database) GetUser(username string) (*User, error) {
+func (db *Database) GetUser(id string) (*User, error) {
 	pipe := db.Client.TxPipeline()
-	score := pipe.ZScore(Ctx, leaderboardKey, username)
-	rank := pipe.ZRank(Ctx, leaderboardKey, username)
 	_, err := pipe.Exec(Ctx)
 	if err != nil {
 		return nil, err
 	}
-	if score == nil {
-		return nil, ErrNil
-	}
+
 	return &User{
-		Username: username,
-		Points:   int(score.Val()),
-		Rank:     int(rank.Val()),
+		Id: id,
 	}, nil
 }

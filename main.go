@@ -25,12 +25,12 @@ func main() {
 
 func initRouter(database *db.Database) *gin.Engine {
 	r := gin.Default()
-	r.GET("/points/:username", func(c *gin.Context) {
-		username := c.Param("username")
-		user, err := database.GetUser(username)
+	r.GET("/user/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		user, err := database.GetUser(id)
 		if err != nil {
 			if err == db.ErrNil {
-				c.JSON(http.StatusNotFound, gin.H{"error": "No record found for " + username})
+				c.JSON(http.StatusNotFound, gin.H{"error": "No record found for " + id})
 				return
 			}
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -39,7 +39,7 @@ func initRouter(database *db.Database) *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"user": user})
 	})
 
-	r.POST("/points", func(c *gin.Context) {
+	r.POST("/user/save", func(c *gin.Context) {
 		var userJson db.User
 		if err := c.ShouldBindJSON(&userJson); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -51,15 +51,6 @@ func initRouter(database *db.Database) *gin.Engine {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"user": userJson})
-	})
-
-	r.GET("/leaderboard", func(c *gin.Context) {
-		leaderboard, err := database.GetLeaderboard()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"leaderboard": leaderboard})
 	})
 
 	return r
