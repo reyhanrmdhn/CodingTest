@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.com/idoko/rediboard/db"
+	"github.com/reyhanrmdhn/CodingTest/db"
 )
 
 var (

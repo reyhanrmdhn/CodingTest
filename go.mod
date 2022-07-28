@@ -1,4 +1,4 @@
-module gitlab.com/idoko/rediboard
+module github.com/reyhanrmdhn/CodingTest
 
 go 1.15
 
