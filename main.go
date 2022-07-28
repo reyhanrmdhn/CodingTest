@@ -25,19 +25,6 @@ func main() {
 
 func initRouter(database *db.Database) *gin.Engine {
 	r := gin.Default()
-	r.GET("/user/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		user, err := database.GetUser(id)
-		if err != nil {
-			if err == db.ErrNil {
-				c.JSON(http.StatusNotFound, gin.H{"error": "No record found for " + id})
-				return
-			}
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"user": user})
-	})
 
 	r.POST("/user/save", func(c *gin.Context) {
 		var userJson db.User
@@ -50,7 +37,7 @@ func initRouter(database *db.Database) *gin.Engine {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"user": userJson})
+		c.JSON(http.StatusOK, gin.H{"error": 0, "message": ""})
 	})
 
 	return r

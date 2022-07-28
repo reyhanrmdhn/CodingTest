@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+
 	"github.com/go-redis/redis/v8"
 )
 
@@ -17,9 +18,9 @@ var (
 
 func NewDatabase(address string) (*Database, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr: address,
+		Addr:     address,
 		Password: "",
-		DB: 0,
+		DB:       0,
 	})
 	if err := client.Ping(Ctx).Err(); err != nil {
 		return nil, err
@@ -28,4 +29,3 @@ func NewDatabase(address string) (*Database, error) {
 		Client: client,
 	}, nil
 }
-
